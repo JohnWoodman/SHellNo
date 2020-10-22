@@ -10,6 +10,8 @@ This is the preliminary work for the SHellNo C2 framework
 
 - Create class object that can be used for any syscall
 
+- Write reverse shell that uses only syscalls (no shellcode)
+
 - Look into converting existing enumeration tools into shellcode (may not be possible, might have to rewrite certain tools to use direct syscalls)
 
 - Look into bypassing Kernel land hooking (Sysmon)
