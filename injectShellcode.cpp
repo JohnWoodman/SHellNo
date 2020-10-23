@@ -59,18 +59,16 @@ using myNtCreateThreadEx = NTSTATUS(NTAPI*)(PHANDLE hThread, ACCESS_MASK Desired
 int main(int argc, char* argv[]) {
 
 	/* RICARDO PUT YOUR CODE HERE */
-	char code[300];
-    memset(code, '\0', sizeof(code));
-    FILE *fptr;
-
-    if ((fptr = fopen("./shellcode.txt","r")) == NULL){
-    	exit(1);
-    }
-    char tmp[300];
-    while(fscanf(fptr,"%s",tmp)==1){
-        strcat(code,tmp);
-    }
-    fclose(fptr);
+	string code;
+   	ifstream file("./shellcode.txt");
+	stringstream buffer;
+	buffer<<file.rdbuf();
+	file.close();
+	buffer>>code;
+	cout<<code;
+	unsigned char* shellCode = new unsigned char[code.length()+1];
+	strcpy((char*)shellCode,code.c_str());
+	printf("%s\n",shellCode)
 	/* RICARDO DON'T PUT YOUR CODE AFTER THIS LINE */
 
 	char syscallStub[SYSCALL_STUB_SIZE] = {};
