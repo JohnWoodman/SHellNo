@@ -190,9 +190,39 @@ int injectShellcode(BOOL spawnProc, int PID, BOOL unsafe) {
 }
 
 int main(int argc, char* argv[]) {
+	using namespace std::literals;
 
-	printf("stealthInjector by @JohnWoodman15\n\n");
-	injectShellcode(true, 0, false);
+	printf("\nstealthInjector by @JohnWoodman15\n\n");
+	
+	bool spawnProc = false;
+	bool unsafe = false;
+	int PID = 0;
+
+	for (int i = 0; i < argc; i++) {
+		if (strcmp(argv[i], "-h") == 0) {
+			printf("Usage: stealthInjector.exe [-spawnProc | -pid <num>] [-unsafe]\n\n");
+			printf("-spawnProc: spawn nslookup.exe and inject into that\n");
+			printf("-pid <num>: inject into remote process given PID\n");
+			printf("-unsafe: inject shellcode using high-level API calls (likely to get caught by AV/EDR)\n");
+			return 0;
+		}
+		if (strcmp(argv[i], "-spawnProc") == 0) {
+			spawnProc = true;
+		}
+		if (strcmp(argv[i], "-pid") == 0) {
+			PID = atoi(argv[i + 1]);
+		}
+		if (strcmp(argv[i], "-unsafe") == 0) {
+			unsafe = true;
+		}
+	}
+
+	if (PID != 0 && spawnProc) {
+		printf("[-] Error: Cannot use flag -spawnProc with flag -pid\n\n");
+		return 0;
+	}
+	
+	injectShellcode(spawnProc, PID, unsafe);
 
 	return 0;
 }
