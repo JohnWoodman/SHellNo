@@ -41,6 +41,9 @@ BOOL GetSyscallStub(LPCSTR functionName, LPVOID syscallStub)
 
 	PIMAGE_EXPORT_DIRECTORY exportDirectory = (PIMAGE_EXPORT_DIRECTORY)RVAtoRawOffset((DWORD_PTR)fileData + exportDirRVA, rdataSection);
 
+
+
+
 	PDWORD addressOfNames = (PDWORD)RVAtoRawOffset((DWORD_PTR)fileData + *(&exportDirectory->AddressOfNames), rdataSection);
 	PDWORD addressOfFunctions = (PDWORD)RVAtoRawOffset((DWORD_PTR)fileData + *(&exportDirectory->AddressOfFunctions), rdataSection);
 	BOOL stubFound = FALSE;
@@ -59,3 +62,5 @@ BOOL GetSyscallStub(LPCSTR functionName, LPVOID syscallStub)
 
 	return stubFound;
 }
+
+//GetSyscallStub("NtCreateFile", exportDirectory, fileData, textSection, rdataSection, syscallStub);
