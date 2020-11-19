@@ -10,6 +10,8 @@ This is the preliminary work for the SHellNo C2 framework
 
 - Create class object that can be used for any syscall
 
+- Write download and upload file functions
+
 - ~~Create header file for retrieving syscall from ntdll (modularization)~~
 
 - ~~Write program that injects shellcode given shellcode file and PID (or option to start own process)~~
