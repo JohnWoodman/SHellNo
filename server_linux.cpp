@@ -11,7 +11,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-
 #define BACKLOG 10	 // how many pending connections queue will hold
 
 void sigchld_handler(int s)
@@ -107,7 +106,6 @@ int main(int argc, char* argv[])
 	}
 
 	printf("server: waiting for connections...\n");
-
 	while(1) {  
 		sin_size = sizeof their_addr;
 		new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
@@ -115,9 +113,7 @@ int main(int argc, char* argv[])
 			perror("accept");
 			continue;
 		}
-		inet_ntop(their_addr.ss_family,
-			get_in_addr((struct sockaddr *)&their_addr),
-			s, sizeof s);
+		inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
 		printf("server: got connection from %s\n", s);
 
 		if (!fork()) { 

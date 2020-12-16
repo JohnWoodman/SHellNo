@@ -2,10 +2,13 @@ CC = g++
 CFLAGS = -g -Wall
 TARGET = main
 
-all: $(TARGET)
+output: main.o listener.o
+	$(CC) -pthread main.o listener.o -o output
+main.o: main.cpp 
+	g++ -pthread -c main.cpp
 
-$(TARGET): $(TARGET)
-	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).cpp
+listener.o: listener.cpp listener.h
+	g++ -pthread -c listener.cpp 
 
 clean:
-	$(RM) $(TARGET)
+	rm *.o output

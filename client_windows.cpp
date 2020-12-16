@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 	WSADATA wsa;
 	SOCKET s;
 	struct sockaddr_in server;
-	char message[] = "hello world";
+	char message[] = "AAA";
 	char server_reply[2000];
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 		printf("failed");
@@ -36,8 +36,7 @@ int main(int argc, char* argv[])
 			server_reply[recv_size] = '\0';
 			printf("%s\n", server_reply);
 		}
-		printf("asd");
-		Sleep(1);
+		Sleep(1000);
 	}
 	return 0;
 }
