@@ -90,17 +90,20 @@ void listener::test(int in){
 		if(send(new_fd, "Hello, world!", 13, 0) == -1) perror("send");
 		sleep(1);
 	}
-	close(sockfd);
-	close(new_fd);
+	//close(sockfd);
+	//close(new_fd);
 
 }
 
 int listener::downloadFile() {
 	printf("Download File...\n");
-	ofstream out("test.txt", ios::binary);
+	//ofstream out("test.txt", ios::binary);
+	/*
 	if (out.is_open()) {
 		out.write(recvbuf, recvbuflen);
-		ZeroMemory(&
+	}
+	*/
+
 }
 
 int listener::uploadFile(string path) {

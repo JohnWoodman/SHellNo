@@ -7,7 +7,7 @@
 #include "json/single_include/nlohmann/json.hpp"
 using namespace std;
 using json = nlohmann::json;
-#define MSGSIZE 4
+#define MSGSIZE 1024
 char msg1[] = "hello, world #1"; 
 void hello(int in){
 	int count=0;
@@ -41,10 +41,12 @@ int main()
 		// Adding this line will 
 		listener newL(3030);
 		close(p[1]); 
-		thread t1(&listener::test,newL,4);
 		while ((nbytes = read(p[0], inbuf, MSGSIZE)) > 0){
 			if(!strcmp(inbuf,"runs")){
 				cout<<"hey"<<endl;
+			} else if (!strcmp(inbuf,"listen")) {
+				cout<< "testing" << endl;
+				thread t1(&listener::test,newL,4);
 			}
 		}
 		if (nbytes != 0){
