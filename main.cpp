@@ -43,10 +43,13 @@ int main()
 		close(p[1]); 
 		while ((nbytes = read(p[0], inbuf, MSGSIZE)) > 0){
 			if(!strcmp(inbuf,"runs")){
-				cout<<"hey"<<endl;
+				cout<<"You typed runs"<<endl;
 			} else if (!strcmp(inbuf,"listen")) {
-				cout<< "testing" << endl;
 				thread t1(&listener::test,newL,4);
+				t1.join();
+				cout << "Thread finished" << endl;
+			} else if (!strcmp(inbuf,"download")) {
+				newL.downloadFile();
 			}
 		}
 		if (nbytes != 0){
