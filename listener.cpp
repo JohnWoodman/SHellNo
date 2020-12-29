@@ -25,7 +25,7 @@ void *get_in_addr(struct sockaddr *sa)
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 listener::listener(int port){
-
+	this->port = port;
 	char PORT[]="6969";
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
@@ -85,19 +85,13 @@ void listener::test(){
 	if (new_fd == -1) {
 		cout<<"accepted error"<<endl;
 	}
-	cout << "Got connection" << endl;
+	cout<<"got connection"<<endl;
+	status = 1;
 	inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
-	postExploitMenu(this);
-	/*
-	int count=20;
-	 while(count--){
-		cout<<"sneding"<<endl;
-		if(send(new_fd, "Hello, world!", 13, 0) == -1) perror("send");
-		sleep(1);
-	}
-	*/
-	close(sockfd);
-	close(new_fd);
+	//postExploitMenu(this);
+
+	//close(sockfd);
+	//close(new_fd);
 
 }
 
@@ -165,4 +159,9 @@ int listener::injectShellcode() {
 	printf("Injecting Shellcode...\n");
 	string cmd = "shellcode:";
 	send(new_fd, cmd.c_str(), cmd.length(), 0);
+}
+
+string listener::print(){
+	string out = "port: "+to_string(port)+" "+to_string(status);
+	return out;
 }

@@ -19,4 +19,4 @@ global.o: global.cpp global.h
 	g++ -c global.cpp
 
 clean:
-	rm *.o output
+	rm output
