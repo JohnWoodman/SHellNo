@@ -101,20 +101,22 @@ void listener::test(){
 
 }
 
-int listener::downloadFile() {
+int listener::downloadFile(string r_path, string l_path) {
 	printf("Download File...\n");
-	ofstream out("test.txt", ios::binary);
+	ofstream out(l_path, ios::binary);
 
-	send(new_fd, "download", 8, 0);
+	string cmd = "download:" + r_path;
+	send(new_fd, cmd.c_str(), cmd.length(), 0);
 			
 	while (out.is_open()) {
 		char *recvbuf = new char[1024];
 		int bytes = recv(new_fd, recvbuf, 1024, 0);
 
-		printf("Bytes is %d\n", bytes);
-		if (bytes > 0) {
+		int len_recv = strlen(recvbuf);
+		printf("Length of recvbuf is %d\n", len_recv);
+		if (len_recv > 0) {
 			printf("Writing to file\n");
-			out.write(recvbuf, 1024);
+			out.write(recvbuf, len_recv);
 			memset(recvbuf, '\0', 1024);
 		} else {
 			printf("Closing file error: %s\n", strerror(errno));
@@ -122,25 +124,25 @@ int listener::downloadFile() {
 			break;
 		}
 
-		if (bytes < 1024) {
+		if (len_recv < 1024) {
 			printf("Last section of file\n");
 			out.close();
 			break;
 		}
 	}
-	printf("Finished Downloading!");
-	//close(sockfd);
-	//close(new_fd);
+	printf("Finished Downloading!\n");
 }
 
-int listener::uploadFile(string path) {
+int listener::uploadFile(string l_path, string r_path) {
 	printf("Uploading File...\n");
 	std::streampos filesize = 0;
-	const char* FilePath = "test2.txt";
-	ifstream in(FilePath, std::ios::binary);
+	ifstream in(l_path, std::ios::binary);
 	char* sendbuf = new char[1024];
 	int sendbuflen = 1024;
 	memset(sendbuf, '\0', sendbuflen);
+
+	string cmd = "upload:" + r_path;
+	send(new_fd, cmd.c_str(), cmd.length(), 0);
 
 	while (in.is_open()) {
 		printf("File is open\n");
@@ -156,4 +158,5 @@ int listener::uploadFile(string path) {
 			memset(sendbuf, '\0', sendbuflen);
 		}
 	}
+	printf("Finished Uploading!\n");
 }

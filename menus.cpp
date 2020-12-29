@@ -11,22 +11,22 @@ using namespace std;
 void postExploitMenu(listener *newL) {
 	printf("<---This is the Post Exploit Menu--->\n");
 
-
 	string cmd;
-
-	cout << ">";
-	while (cin >> cmd){
-		if (cmd == "download") {
+	while(true){
+		cout<<"ShellNo:Listener->";
+		getline(cin,cmd);
+		if(!cmd.compare("download")){
 			printf("You Selected Download\n");
-			newL->downloadFile();
-		} else if (cmd == "upload") {
-			printf("You selected Upload\n");
-			newL->uploadFile("test3.txt");
-		} else if (cmd == "exit") {
+			newL->downloadFile("C:\\\\Users\\\\john\\\\Desktop\\\\download.txt", "download.txt");
+		}
+		if(!cmd.compare("upload")){
+			printf("You Selected Upload\n");
+			newL->uploadFile("upload.txt", "C:\\\\test\\\\upload.txt");
+		}
+		if(!cmd.compare("exit")){
 			printf("Exiting!\n");
 			break;
 		}
-		cout << ">";
 	}
 }
 
