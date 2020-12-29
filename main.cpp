@@ -27,8 +27,8 @@ int main()
 			listener* newL = new listener(port);
 			listeners.push_back(newL);
 			thread t1(&listener::test,newL);
-			//t1.detach();
-			t1.join();
+			t1.detach();
+			//t1.join();
 		}
 		if(regex_match(buff,regex("list -a"))){
 			for(int i=0;i<listeners.size();i++){
