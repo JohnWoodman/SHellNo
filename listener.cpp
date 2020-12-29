@@ -90,7 +90,7 @@ void listener::test(){
 	postExploitMenu(this);
 	/*
 	int count=20;
-	while(count--){
+	 while(count--){
 		cout<<"sneding"<<endl;
 		if(send(new_fd, "Hello, world!", 13, 0) == -1) perror("send");
 		sleep(1);
