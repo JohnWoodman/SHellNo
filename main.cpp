@@ -9,6 +9,7 @@ using namespace std;
 using json = nlohmann::json;
 #define MSGSIZE 4
 char msg1[] = "hello, world #1"; 
+
 void hello(int in){
 	int count=0;
 	while(1){
@@ -16,8 +17,15 @@ void hello(int in){
 		this_thread::sleep_for(chrono::seconds(1));
 	}
 }
+
 int main() 
 { 
+	char buff[200];
+	while(true){
+		printf("ShellNo->");
+		scanf("%s",buff);
+		printf("%s\n",buff);
+	}
 	char inbuf[MSGSIZE]; 
 	int p[2], pid, nbytes; 
 
@@ -37,6 +45,7 @@ int main()
 		close(p[1]); 
 		wait(NULL); 
 	} 
+
 	else { 
 		// Adding this line will 
 		listener newL(3030);

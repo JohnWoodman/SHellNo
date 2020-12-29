@@ -97,10 +97,6 @@ void listener::test(int in){
 
 int listener::downloadFile() {
 	printf("Download File...\n");
-	ofstream out("test.txt", ios::binary);
-	if (out.is_open()) {
-		out.write(recvbuf, recvbuflen);
-		ZeroMemory(&
 }
 
 int listener::uploadFile(string path) {
