@@ -98,7 +98,3 @@ void listener::test(int in){
 int listener::downloadFile() {
 	printf("Download File...\n");
 }
-
-int listener::uploadFile(string path) {
-	printf("Uploading File...\n");
-}
