@@ -20,12 +20,14 @@ using namespace std;
 class listener{
     public: 
 	char PORT[6];
+	int port;
 	int sockfd, new_fd;  
 	struct addrinfo hints, *servinfo, *p;
 	struct sockaddr_storage their_addr;
 	socklen_t sin_size;
 	struct sigaction sa;
 	int yes=1;
+	int status=0;
 	char s[INET6_ADDRSTRLEN];
 	int rv;
 
@@ -35,6 +37,7 @@ class listener{
     int downloadFile(string r_path, string l_path);
     int uploadFile(string l_path, string r_path);
     int reverseShell();
+	string print();
 };
 
 #endif
