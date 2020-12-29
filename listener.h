@@ -32,8 +32,8 @@ class listener{
     listener(int port);
     int listProcess();
     void test();
-    int downloadFile();
-    int uploadFile(string path);
+    int downloadFile(string r_path, string l_path);
+    int uploadFile(string l_path, string r_path);
     int reverseShell();
 };
 

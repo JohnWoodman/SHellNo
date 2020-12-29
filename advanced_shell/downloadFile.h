@@ -1,4 +1,33 @@
 #pragma once
-int downloadFile() {
+#include <fstream>
 
+int downloadFile(SOCKET ClientSocket, char* file_path) {
+	printf("Downloading File %s\n", file_path);
+	std::streampos filesize = 0;
+	std::ifstream in(file_path, std::ios::binary);
+	char* sendbuf = new char[1024];
+	int sendbuflen = 1024;
+	ZeroMemory(sendbuf, sendbuflen);
+
+	if (!in.is_open()) {
+		printf("Error Opening File\n");
+		return 1;
+	}
+
+	while (in.is_open()) {
+		printf("File is open\n");
+		in.read(sendbuf, sendbuflen);
+		if (in.eof()) {
+			printf("End of file\n");
+			send(ClientSocket, sendbuf, sendbuflen, 0);
+			ZeroMemory(sendbuf, sendbuflen);
+			in.close();
+		}
+		else {
+			printf("Sending file\n");
+			send(ClientSocket, sendbuf, sendbuflen, 0);
+			ZeroMemory(sendbuf, sendbuflen);
+		}
+	}
+	return 0;
 }
