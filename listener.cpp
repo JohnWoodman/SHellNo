@@ -78,7 +78,7 @@ listener::listener(int port){
 	}
 
 }
-void listener::test(int in){
+void listener::test(){
 	printf("server: waiting for connections...\n");
 	sin_size = sizeof their_addr;
 	new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
