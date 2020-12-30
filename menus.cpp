@@ -25,7 +25,7 @@ void postExploitMenu(listener *newL) {
 		}
 		if(!cmd.compare("inject-shellcode")){
 			printf("You Selected Shell\n");
-			newL->injectShellcode();
+			newL->injectShellcode("shellcode.bin");
 		}
 		if(!cmd.compare("exit")){
 			printf("Exiting!\n");
