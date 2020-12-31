@@ -1,7 +1,6 @@
 #include "listener.h"
 #include "menus.h"
 #include <fstream>
-
 using namespace std;
 
 void sigchld_handler(int s)
@@ -26,7 +25,8 @@ void *get_in_addr(struct sockaddr *sa)
 }
 listener::listener(int port){
 	this->port = port;
-	char PORT[]="6969";
+	string portString = to_string(port);
+	const char* PORT= portString.c_str();
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -46,7 +46,7 @@ listener::listener(int port){
 
 		if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
 			perror("setsockopt");
-			exit(1);
+			return;
 		}
 
 		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
@@ -61,12 +61,12 @@ listener::listener(int port){
 
 	if (p == NULL)  {
 		fprintf(stderr, "server: failed to bind\n");
-		exit(1);
+		return;
 	}
 
 	if (listen(sockfd, 1) == -1) {
 		perror("listen");
-		exit(1);
+		return;
 	}
 
 	sa.sa_handler = sigchld_handler; // reap all dead processes
@@ -74,7 +74,7 @@ listener::listener(int port){
 	sa.sa_flags = SA_RESTART;
 	if (sigaction(SIGCHLD, &sa, NULL) == -1) {
 		perror("sigaction");
-		exit(1);
+		return;
 	}
 
 }
@@ -163,4 +163,9 @@ int listener::injectShellcode() {
 string listener::print(){
 	string out = "port: "+to_string(port)+" "+to_string(status);
 	return out;
+}
+
+void
+listener::setID(int pid){
+	id = pid; 
 }

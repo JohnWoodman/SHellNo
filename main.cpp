@@ -24,23 +24,18 @@ int main()
 			regex numb("[1-5]?[0-9]?[0-9]?[0-9]?[0-9]|[6][0-5][0-5][0-3][0-5]");
 			regex_search(buff,match,numb);
 			int port = stoi(match[0],nullptr,10);
-			listener* newL = new listener(port);
-			listeners.push_back(newL);
-			thread t1(&listener::test,newL);
-			t1.detach();
+			listManager->addListener(port);
 			//t1.join();
 		}
 		if(regex_match(buff,regex("list -a"))){
-			for(int i=0;i<listeners.size();i++){
-				cout<<listeners[i]->print()<<endl;
-			}
+			listManager->listListeners();
 		}
 		if(regex_match(buff,regex("list -l [1-9]?[1-9]"))){
 			smatch match;
 			regex numb("[1-9]?[1-9]");
 			regex_search(buff,match,numb);
 			int id = stoi(match[0],nullptr,10);
-			postExploitMenu(listeners[id-1]);
+			postExploitMenu(listManager->getListener(id-1));
 		}
 
 	}

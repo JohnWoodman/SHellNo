@@ -1,5 +1,4 @@
 #include "global.h"
 
-vector<listener*> listeners;
-const int MAX_LISTENERS = 32;
+listenerManager* listManager = new listenerManager();
 const int MSGSIZE  = 1024;

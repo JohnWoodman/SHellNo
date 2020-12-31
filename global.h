@@ -1,6 +1,5 @@
 #include <vector>
-#include "listener.h"
+#include "listenerManager.h"
 
-extern vector<listener*> listeners;
-extern const int MAX_LISTENERS;
+extern listenerManager* listManager;
 extern const int MSGSIZE;

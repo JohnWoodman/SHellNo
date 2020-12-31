@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	}
 	server.sin_addr.s_addr = inet_addr(argv[1]);
 	server.sin_family = AF_INET;
-	server.sin_port = htons(6969);
+	server.sin_port = htons(2402);
 	if (connect(s, (struct sockaddr*)&server, sizeof(server)) < 0) {
 		printf("fialed to connect");
 		exit(1);

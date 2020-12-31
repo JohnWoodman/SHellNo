@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	iResult = getaddrinfo("192.168.43.1", "6969", &hints, &result);
+	iResult = getaddrinfo("172.18.255.219", "6969", &hints, &result);
 	if (iResult != 0) {
 		printf("getaddrinfo failed with error: %d\n", iResult);
 		WSACleanup();

