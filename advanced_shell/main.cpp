@@ -1,9 +1,9 @@
-#pragma comment(lib, "Ws2_32.lib")
+//#pragma comment(lib, "Ws2_32.lib")
 #pragma warning(disable:4996)
 
 #include "winsock2.h"
 #include "windows.h"
-#include <WS2tcpip.h>
+#include <ws2tcpip.h>
 #include <iostream>
 #include "getSyscall.h"
 #include "injectShellcode.h"

