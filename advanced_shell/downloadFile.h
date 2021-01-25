@@ -11,7 +11,13 @@ int downloadFile(SOCKET ClientSocket, char* file_path) {
 
 	if (!in.is_open()) {
 		printf("Error Opening File\n");
+		send(ClientSocket, "1: Error Opening File\n", sendbuflen, 0);
+		ZeroMemory(sendbuf, sendbuflen);
 		return 1;
+	}
+	else {
+		send(ClientSocket, "0", sendbuflen, 0);
+		ZeroMemory(sendbuf, sendbuflen);
 	}
 
 	while (in.is_open()) {
