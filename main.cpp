@@ -37,6 +37,17 @@ int main()
 			int id = stoi(match[0],nullptr,10);
 			postExploitMenu(listManager->getListener(id-1));
 		}
+		if (regex_match(buff, regex("exit"))) {
+			break;
+		}
+		if(regex_match(buff, regex("help"))){
+			printf("HELP MENU\n");
+			printf("<========>\n");
+			printf("list -c <port number>: listen on port\n");
+			printf("list -a: list all listeners\n");
+			printf("list -l <id>: connect to specific listener\n");
+			printf("exit: exit ShellNo\n");
+		}
 
 	}
 

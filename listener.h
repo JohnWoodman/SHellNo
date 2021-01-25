@@ -41,6 +41,7 @@ class listener{
 	void setID(int pid);
 	int injectShellcode(string l_path);
 	string print();
+	int dropIntoShell();
 };
 
 #endif

