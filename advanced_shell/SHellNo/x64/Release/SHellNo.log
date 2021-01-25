@@ -1,0 +1,11 @@
+﻿  main.cpp
+C:\Users\john\source\repos\SHellNo\SHellNo\injectShellcode.h(93,79): warning C4267: 'argument': conversion from 'size_t' to 'ULONG', possible loss of data
+C:\Users\john\source\repos\SHellNo\SHellNo\injectShellcode.h(107,78): warning C4267: 'argument': conversion from 'size_t' to 'ULONG', possible loss of data
+C:\Users\john\source\repos\SHellNo\SHellNo\uploadFile.h(12,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\john\source\repos\SHellNo\SHellNo\downloadShellcode.h(13,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Generating code
+  Finished generating code
+  2 of 160 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  SHellNo.vcxproj -> C:\Users\john\source\repos\SHellNo\x64\Release\SHellNo.exe

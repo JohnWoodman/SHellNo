@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\john\source\repos\SHellNo\SHellNo\uploadFile.h(12,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  SHellNo.vcxproj -> C:\Users\john\source\repos\SHellNo\x64\Debug\SHellNo.exe

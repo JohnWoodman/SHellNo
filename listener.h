@@ -22,7 +22,7 @@ class listener{
 	char PORT[6];
 	int port;
 	int id;
-	int sockfd, new_fd;  
+	int sockfd, new_fd, shell_fd;  
 	struct addrinfo hints, *servinfo, *p;
 	struct sockaddr_storage their_addr;
 	socklen_t sin_size;

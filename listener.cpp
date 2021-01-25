@@ -216,6 +216,12 @@ int listener::dropIntoShell() {
 	//cmd = "whoami";
 	//send(new_fd, cmd.c_str(), cmd.length(), 0);
 
+	//sin_size = sizeof their_addr;
+	//shell_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+	//if (shell_fd == -1) {
+	//	cout<<"accepted error"<<endl;
+	//}
+
 	int bytes;
 	int byte_recv;
 	int n;
@@ -225,14 +231,15 @@ int listener::dropIntoShell() {
 		byte_recv = recv(new_fd, recvbuf, buflen, 0);
 		cout << recvbuf;	
 
-		string data = "whoami";
+		//string data = "whoami\n";
+		//string data;
 		//getline(cin, data);
 		//strcpy(sendbuf, data.c_str());
 		n = 0;
 		while ((sendbuf[n++] = getchar()) != '\n');
-		//printf("Sending command\n");
+		//printf("Sending command: %s", sendbuf);
 		bytes = send(new_fd, sendbuf, sizeof(sendbuf), 0);
-		//bytes = send(new_fd, data.c_str(), sizeof(data.c_str()), 0);
+		//bytes = send(new_fd, data.c_str(), data.length(), 0);
 
 		memset(recvbuf, '\0', buflen);
 		memset(sendbuf, '\0', buflen);
