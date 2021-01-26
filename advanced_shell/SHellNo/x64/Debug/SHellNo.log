@@ -1,3 +1,40 @@
 ﻿  main.cpp
-C:\Users\john\source\repos\SHellNo\SHellNo\uploadFile.h(12,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  SHellNo.vcxproj -> C:\Users\john\source\repos\SHellNo\x64\Debug\SHellNo.exe
+C:\Users\Ricardo\Desktop\SHellNo\advanced_shell\SHellNo\injectShellcode.h(93,79): warning C4267: 'argument': conversion from 'size_t' to 'ULONG', possible loss of data
+C:\Users\Ricardo\Desktop\SHellNo\advanced_shell\SHellNo\injectShellcode.h(107,78): warning C4267: 'argument': conversion from 'size_t' to 'ULONG', possible loss of data
+C:\Users\Ricardo\Desktop\SHellNo\advanced_shell\SHellNo\uploadFile.h(12,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Ricardo\Desktop\SHellNo\advanced_shell\SHellNo\downloadShellcode.h(13,33): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+libcpmtd.lib(xlocale.obj) : error LNK2001: unresolved external symbol _calloc_dbg
+main.obj : error LNK2001: unresolved external symbol _calloc_dbg
+libcpmtd.lib(_tolower.obj) : error LNK2001: unresolved external symbol _calloc_dbg
+libcpmtd.lib(locale.obj) : error LNK2001: unresolved external symbol _calloc_dbg
+libcpmtd.lib(wlocale.obj) : error LNK2001: unresolved external symbol _calloc_dbg
+libcpmtd.lib(StlCompareStringA.obj) : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(StlLCMapStringA.obj) : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(wlocale.obj) : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(xlocale.obj) : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(xwcsxfrm.obj) : error LNK2001: unresolved external symbol _free_dbg
+main.obj : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(locale0.obj) : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(cout.obj) : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(locale.obj) : error LNK2001: unresolved external symbol _free_dbg
+libcpmtd.lib(StlCompareStringA.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(StlLCMapStringA.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(wlocale.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(xlocale.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(xwcsxfrm.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+main.obj : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(locale0.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(cout.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(locale.obj) : error LNK2001: unresolved external symbol _malloc_dbg
+libcpmtd.lib(xlocale.obj) : error LNK2001: unresolved external symbol _CrtDbgReport
+main.obj : error LNK2001: unresolved external symbol _CrtDbgReport
+libcpmtd.lib(cout.obj) : error LNK2001: unresolved external symbol _CrtDbgReport
+libcpmtd.lib(locale.obj) : error LNK2001: unresolved external symbol _CrtDbgReport
+libcpmtd.lib(wlocale.obj) : error LNK2001: unresolved external symbol _CrtDbgReport
+libcpmtd.lib(_tolower.obj) : error LNK2019: unresolved external symbol _wcsdup_dbg referenced in function _Getctype
+libcpmtd.lib(xstrcoll.obj) : error LNK2001: unresolved external symbol _wcsdup_dbg
+libcpmtd.lib(locale.obj) : error LNK2019: unresolved external symbol _realloc_dbg referenced in function "private: static void __cdecl std::locale::_Locimp::_Locimp_Addfac(class std::locale::_Locimp *,class std::locale::facet *,unsigned __int64)" (?_Locimp_Addfac@_Locimp@locale@std@@CAXPEAV123@PEAVfacet@23@_K@Z)
+libcpmtd.lib(StlLCMapStringA.obj) : error LNK2019: unresolved external symbol _CrtDbgReportW referenced in function _freea_crt
+libcpmtd.lib(xmbtowc.obj) : error LNK2001: unresolved external symbol _CrtDbgReportW
+libcpmtd.lib(StlCompareStringA.obj) : error LNK2001: unresolved external symbol _CrtDbgReportW
+C:\Users\Ricardo\Desktop\SHellNo\advanced_shell\x64\Debug\SHellNo.exe : fatal error LNK1120: 7 unresolved externals

