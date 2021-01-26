@@ -228,49 +228,26 @@ int listener::dropIntoShell() {
 
 	printf("Dropped into shell!\n");
 
-	//cmd = "whoami";
-	//send(new_fd, cmd.c_str(), cmd.length(), 0);
-
-	//sin_size = sizeof their_addr;
-	//shell_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
-	//if (shell_fd == -1) {
-	//	cout<<"accepted error"<<endl;
-	//}
-
 	int bytes;
 	int byte_recv;
 	int n;
 	pthread_attr_t attr;
 	void* status;
-    // Initialize and set thread joinable
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    	// Initialize and set thread joinable
+    	pthread_attr_init(&attr);
+    	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 	pthread_t t;
 	pthread_create(&t,&attr,printingThing,(void*)&new_fd);
 
 	do {
-		//string data = "whoami\n";
-		//string data;
-		//getline(cin, data);
-		//strcpy(sendbuf, data.c_str());
 		n = 0;
-		//while ((sendbuf[n++] = getchar()) != '\n');
 		fgets(sendbuf,1024,stdin);
 
 		n = strlen(sendbuf);
 		sendbuf[n]='\n'; sendbuf[n+1]='\0';
-		//string mess;
-		//getline(cin,mess);
-		//send(new_fd, mess.c_str(), mess.length(), 0);
 
 		bytes = send(new_fd, sendbuf, strlen(sendbuf), 0);
 
-		//bytes = send(new_fd, data.c_str(), data.length(), 0);
-		/*
-		for(int i=0;i<byte_recv;i++){
-			printf("%c",recvbuf[i]);
-		}
-		*/
 	} while (true);
 	return 0;
 }
